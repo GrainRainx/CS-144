@@ -30,9 +30,8 @@ using namespace std;
 
 
 
-StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity)
-, index_is_arrive(capacity, false), store_string(capacity, ""), cur_input_bytestream(0), 
-is_eof(false), unreass_byte(0)
+StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity), _capacity(capacity),
+store_byte(), cur_ca_index(0), bytestream_tail(0), store_index()
 {}
 
 
@@ -40,28 +39,57 @@ is_eof(false), unreass_byte(0)
 //! possibly out-of-order, from the logical stream, and assembles any newly
 //! contiguous substrings and writes them into the output stream in order.
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
-    DUMMY_CODE(data, index, eof);
-
-    index_is_arrive[index] = true;
-    store_string[index] = data;
+    // cout << "i am in reassembler" << endl;
     size_t len = data.length();
-    unreass_byte += len;
-    if(eof)
+    cur_ca_index = _output.bytes_read();
+    cout << "pre ==========" << endl;
+    cout << "data = " << data << endl;
+    cout << "after  ============" << endl;
+    // if(index + len > cur_ca_index + _capacity) return;
+    if(index + len > bytestream_tail + _capacity) return;
+
+    size_t st = max(index, bytestream_tail);
+
+    for(size_t i = st; i < index + len; i++)
     {
-        is_eof = true;
+        if(store_index.count(i)) continue;
+        store_byte.push({i, data[i - index]});
+        store_index.insert(i);
+    }
+    
+    string ans = "";
+    cout << endl;
+    cout << "=================" << endl;
+    cout << "data = " << data << ' ' << "index = " << index << endl;
+    cout << "top = " << store_byte.top().first << ' ' << store_byte.top().second << endl;
+    cout << "store index ===" << endl;
+    for(auto x : store_index)
+        cout << x << ' ';
+    cout << endl;
+    cout << "=================" << endl;
+    cout << endl;
+
+    while(store_byte.size() && bytestream_tail == store_byte.top().first)
+    {
+        // auto de_index = store_index.lower_bound(store_byte.top().first);
+        // cout << *de_index << endl;
+        // store_index.erase(de_index);
+        // cout << "byte tail = " << bytestream_tail << endl;
+        ans += store_byte.top().second;
+        store_byte.pop();
+        bytestream_tail++;
+    }
+    // if(!ans.size()) return ;
+    cout <<  "ans = " << ans << endl;
+    _output.write(ans);
+    // cout << "total write = " << _output.bytes_written() << endl;
+    if (eof) {
+        // cout << "is eof" << endl;
         _output.end_input();
     }
-    while(index_is_arrive[cur_input_bytestream])
-    {
-        size_t delen = store_string[cur_input_bytestream].length();
-        unreass_byte -= delen;
-        _output.write(store_string[cur_input_bytestream]);
-        cur_input_bytestream++;
-    }
-
 }
 
-size_t StreamReassembler::unassembled_bytes() const { return unreass_byte; }
+size_t StreamReassembler::unassembled_bytes() const { return store_byte.size(); }
 
 bool StreamReassembler::empty() const 
 {

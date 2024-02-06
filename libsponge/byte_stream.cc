@@ -20,12 +20,19 @@ can_write(capacity_), total_read(0), total_write(0), is_end_of(false)
 
 
 size_t ByteStream::write(const string &data) {
-    DUMMY_CODE(data);
+    if(data == "defghX") printf("i am in\n");
     size_t len = data.size();
     len = min(len, can_write);
     if(is_end_of) return 0;
     for(size_t i = 0; i < len; i ++)
         store_byte.push_back(data[i]);
+    
+    if(data == "defghX")
+    {
+        printf("i am in 2\n");
+        printf("bytestream total write = %ld\n", total_write);
+        printf("len = %ld\n", len);
+    } 
     can_read += len;
     can_write -= len;
     total_write += len;

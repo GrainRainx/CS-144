@@ -74,6 +74,7 @@ struct BytesAssembled : public ReassemblerExpectation {
     }
 
     void execute(StreamReassembler &reassembler) const {
+        // cout << "hello test" << reassembler.unassembled_bytes() << endl;
         if (reassembler.stream_out().bytes_written() != _bytes) {
             std::ostringstream ss;
             ss << "The reassembler was expected to have `" << _bytes << "` total bytes assembled, but there were `"
@@ -156,7 +157,11 @@ struct SubmitSegment : public ReassemblerAction {
         return ss.str();
     }
 
-    void execute(StreamReassembler &reassembler) const { reassembler.push_substring(_data, _index, _eof); }
+    void execute(StreamReassembler &reassembler) const { 
+        // std::cout << "seg execute [" << "data = " << _data << " _index = " << _index  << " eof = " << _eof << "]" << std::endl;
+        reassembler.push_substring(_data, _index, _eof); 
+        std::cout << "total write = " << reassembler.stream_out().bytes_written() << std::endl;
+        }
 };
 
 class ReassemblerTestHarness {

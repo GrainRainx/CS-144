@@ -6,6 +6,12 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <queue>
+#include <set>
+#include <iostream>
+
+typedef std::pair<size_t, char> PIC;
+
 
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
 //! possibly overlapping) into an in-order byte stream.
@@ -15,12 +21,10 @@ class StreamReassembler {
 
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
-    std::vector<bool> index_is_arrive;
-    std::vector<std::string> store_string;
-    int cur_input_bytestream;
-    bool is_eof;
-    size_t unreass_byte;
-
+    std::priority_queue<PIC, std::vector<PIC>, std::greater<PIC>> store_byte;
+    size_t cur_ca_index;  // 当前缓冲区的头部
+    size_t bytestream_tail;
+    std::multiset<size_t> store_index;
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
