@@ -65,7 +65,6 @@ can_write(capacity_), total_read(0), total_write(0), is_end_of(false)
 
 
 size_t ByteStream::write(const string &data) {
-    DUMMY_CODE(data);
     size_t len = data.size();
     len = min(len, can_write);
     if(is_end_of) return 0;
@@ -103,15 +102,10 @@ void ByteStream::pop_output(const size_t len)
 //! \param[in] len bytes will be popped and returned
 //! \returns a string
 std::string ByteStream::read(const size_t len) {
-    DUMMY_CODE(len);
     string ans = "";
-    if(len > can_read)
-    {
-        set_error();
-        return ans;
-    }
-    ans = peek_output(len);
-    pop_output(len); 
+    size_t read_len = min(len, can_read);
+    ans = peek_output(read_len);
+    pop_output(read_len); 
     return ans;
 }
 
@@ -130,3 +124,4 @@ size_t ByteStream::bytes_written() const { return total_write; }
 size_t ByteStream::bytes_read() const { return total_read; }
 
 size_t ByteStream::remaining_capacity() const { return can_write; }
+

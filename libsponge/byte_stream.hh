@@ -19,14 +19,6 @@ class ByteStream {
     size_t total_write;
     bool is_end_of;
 
-
-    // Your code here -- add private members as necessary.
-
-    // Hint: This doesn't need to be a sophisticated data structure at
-    // all, but if any of your tests are taking longer than a second,
-    // that's a sign that you probably want to keep exploring
-    // different approaches.
-
     bool _error{};  //!< Flag indicating that the stream suffered an error.
 
   public:
@@ -93,3 +85,4 @@ class ByteStream {
 };
 
 #endif  // SPONGE_LIBSPONGE_BYTE_STREAM_HH
+

@@ -25,7 +25,6 @@ int main() {
             test.execute(BytesAssembled(6));
             test.execute(BytesAvailable("ef"));
         }
-
         {
             ReassemblerTestHarness test{2};
 
@@ -43,10 +42,8 @@ int main() {
 
             test.execute(BytesAvailable("cd"));
         }
-
         {
             ReassemblerTestHarness test{2};
-
             test.execute(SubmitSegment{"bX", 1});
             test.execute(BytesAssembled(0));
 
@@ -55,7 +52,6 @@ int main() {
 
             test.execute(BytesAvailable("ab"));
         }
-
         {
             ReassemblerTestHarness test{1};
 
@@ -74,7 +70,6 @@ int main() {
             test.execute(BytesAvailable("b"));
             test.execute(BytesAssembled(2));
         }
-
         {
             ReassemblerTestHarness test{8};
 
@@ -96,7 +91,6 @@ int main() {
             test.execute(BytesAvailable{"bcdefghi"});
             test.execute(AtEof{});
         }
-
         {
             ReassemblerTestHarness test{3};
             for (unsigned int i = 0; i < 99997; i += 3) {
