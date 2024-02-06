@@ -25,6 +25,7 @@ class StreamReassembler {
     size_t cur_ca_index;  // 当前缓冲区的头部
     size_t bytestream_tail;
     std::multiset<size_t> store_index;
+    size_t end_index;
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.

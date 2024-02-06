@@ -160,7 +160,7 @@ struct SubmitSegment : public ReassemblerAction {
     void execute(StreamReassembler &reassembler) const { 
         // std::cout << "seg execute [" << "data = " << _data << " _index = " << _index  << " eof = " << _eof << "]" << std::endl;
         reassembler.push_substring(_data, _index, _eof); 
-        std::cout << "total write = " << reassembler.stream_out().bytes_written() << std::endl;
+        // std::cout << "total write = " << reassembler.stream_out().bytes_written() << std::endl;
         }
 };
 

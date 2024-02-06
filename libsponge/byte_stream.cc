@@ -65,15 +65,10 @@ void ByteStream::pop_output(const size_t len)
 //! \param[in] len bytes will be popped and returned
 //! \returns a string
 std::string ByteStream::read(const size_t len) {
-    DUMMY_CODE(len);
     string ans = "";
-    if(len > can_read)
-    {
-        set_error();
-        return ans;
-    }
-    ans = peek_output(len);
-    pop_output(len); 
+    size_t read_len = min(len, can_read);
+    ans = peek_output(read_len);
+    pop_output(read_len); 
     return ans;
 }
 
