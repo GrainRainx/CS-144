@@ -89,6 +89,7 @@ void ByteStream::pop_output(const size_t len)
     DUMMY_CODE(len);
     if(len > can_read) 
     {
+        printf("error!!! len > can_read\n");
         set_error();
         return ;
     }

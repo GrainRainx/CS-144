@@ -14,14 +14,14 @@ using namespace std;
 int main() {
     try {
         auto rd = get_random_generator();
-
+        printf("1\n");
         {
             TCPConfig cfg;
             WrappingInt32 isn(rd());
             uint16_t retx_timeout = uniform_int_distribution<uint16_t>{10, 10000}(rd);
             cfg.fixed_isn = isn;
             cfg.rt_timeout = retx_timeout;
-
+            // cout << "re timeout is " << retx_timeout << endl; 
             TCPSenderTestHarness test{"Retx SYN twice at the right times, then ack", cfg};
             test.execute(ExpectSegment{}.with_no_flags().with_syn(true).with_payload_size(0).with_seqno(isn));
             test.execute(ExpectNoSegment{});
@@ -34,16 +34,22 @@ int main() {
             test.execute(ExpectBytesInFlight{1});
             // Wait twice as long b/c exponential back-off
             test.execute(Tick{2 * retx_timeout - 1u});
+            printf("2.0\n");
             test.execute(ExpectNoSegment{});
+            printf("2.1\n");
             test.execute(Tick{1});
+            printf("2.2\n");
             test.execute(ExpectSegment{}.with_no_flags().with_syn(true).with_payload_size(0).with_seqno(isn));
+            printf("2.3\n");
             test.execute(ExpectState{TCPSenderStateSummary::SYN_SENT});
+            printf("2.4\n");
             test.execute(ExpectBytesInFlight{1});
+            printf("2.5\n");
             test.execute(AckReceived{WrappingInt32{isn + 1}});
+            printf("2.6\n");
             test.execute(ExpectState{TCPSenderStateSummary::SYN_ACKED});
             test.execute(ExpectBytesInFlight{0});
         }
-
         {
             TCPConfig cfg;
             WrappingInt32 isn(rd());
@@ -67,6 +73,7 @@ int main() {
             test.execute(Tick{1}.with_max_retx_exceeded(true));
         }
 
+        printf("3\n");
         {
             TCPConfig cfg;
             WrappingInt32 isn(rd());

@@ -28,7 +28,7 @@ int main() {
             test.execute(BytesAvailable("a"));
             test.execute(NotAtEof{});
         }
-        // printf("2\n");
+        printf("2\n");
         {
             ReassemblerTestHarness test{65000};
             // printf("2.1\n");
@@ -41,7 +41,7 @@ int main() {
             test.execute(AtEof{});
             // printf("2.5\n");
         }
-        // printf("3\n");
+        printf("3\n");
         {
             ReassemblerTestHarness test{65000};
             // printf("3.1\n");
@@ -54,7 +54,7 @@ int main() {
             test.execute(AtEof{});
             // printf("3.5\n");
         }
-        // printf("4\n");
+        printf("4\n");
         {
             ReassemblerTestHarness test{65000};
 
@@ -64,7 +64,7 @@ int main() {
             test.execute(BytesAvailable("b"));
             test.execute(AtEof{});
         }
-        // printf("5\n");
+        printf("5\n");
         {
             ReassemblerTestHarness test{65000};
 

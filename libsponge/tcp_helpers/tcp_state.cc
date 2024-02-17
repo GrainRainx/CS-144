@@ -92,11 +92,17 @@ string TCPState::state_summary(const TCPReceiver &receiver) {
 }
 
 string TCPState::state_summary(const TCPSender &sender) {
+    // printf("i am in funck\n");
+    // std::cout << "stream in is eof " << sender.stream_in().eof() << std::endl;
+
     if (sender.stream_in().error()) {
         return TCPSenderStateSummary::ERROR;
     } else if (sender.next_seqno_absolute() == 0) {
         return TCPSenderStateSummary::CLOSED;
     } else if (sender.next_seqno_absolute() == sender.bytes_in_flight()) {
+        // cout << "next absolute is " << sender.next_seqno_absolute() << endl;
+        // cout << "bytes in flight is " << sender.bytes_in_flight() << endl;
+        // std::cout << "this is return " << std::endl;
         return TCPSenderStateSummary::SYN_SENT;
     } else if (not sender.stream_in().eof()) {
         return TCPSenderStateSummary::SYN_ACKED;

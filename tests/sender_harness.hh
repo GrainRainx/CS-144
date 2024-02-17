@@ -60,7 +60,11 @@ struct ExpectState : public SenderExpectation {
     ExpectState(const std::string &state) : _state(state) {}
     std::string description() const { return "in state `" + _state + "`"; }
     void execute(TCPSender &sender, std::queue<TCPSegment> &) const {
+        // std::cout << "pre" << std::endl;
+        // std::cout << "tcp state = " << TCPState::state_summary(sender) << std::endl;
+        // std::cout << "after" << std::endl;
         if (TCPState::state_summary(sender) != _state) {
+            // std::cout << "cao ni ma " << std::endl;
             throw SenderExpectationViolation("The TCPSender was in state `" + TCPState::state_summary(sender) +
                                              "`, but it was expected to be in state `" + _state + "`");
         }
@@ -104,6 +108,13 @@ struct ExpectNoSegment : public SenderExpectation {
     std::string description() const { return "no (more) segments"; }
 
     void execute(TCPSender &, std::queue<TCPSegment> &segments) const {
+        using namespace std;
+        cout << "if is empty " << segments.empty() << endl;
+        if(!segments.empty()) {
+        TCPSegment tcp_segment = segments.front();
+        cout << "is syn" << tcp_segment.header().syn << endl; 
+        cout << "is fin" << tcp_segment.header().fin << endl; 
+        }
         if (not segments.empty()) {
             std::ostringstream ss;
             ss << "The TCPSender sent a segment, but should not have. Segment info:\n\t";
@@ -138,10 +149,20 @@ struct WriteBytes : public SenderAction {
 
     void execute(TCPSender &sender, std::queue<TCPSegment> &) const {
         sender.stream_in().write(std::move(_bytes));
+        // using namespace std;
+        // std::string payload = sender.stream_in().read(_bytes.length());
+        // cout << "this payload is check success " << payload << endl;
+        // std::cout << "we start debug here ========" << std::endl;
         if (_end_input) {
+            // std::cout << "this is end input" << std::endl;
             sender.stream_in().end_input();
         }
+        // cout << "i can success" << endl;
+        // std::cout << "byte is " << _bytes << std::endl;
+        // std::cout << "is here" << std::endl;
         sender.fill_window();
+        // cout << "finish fill window" << endl;
+        // return ;
     }
 
     WriteBytes &with_end_input(const bool end_input) {
@@ -170,10 +191,18 @@ struct Tick : public SenderAction {
         return ss.str();
     }
 
-    void execute(TCPSender &sender, std::queue<TCPSegment> &) const {
+    void execute(TCPSender &sender, std::queue<TCPSegment> & segment) const {
+        using namespace std;
+        cout << "tick pre  ==========    " << segment.empty() << endl;
         sender.tick(_ms);
+        
+        cout << "tick after ==========    " << segment.empty() << endl;
+        // using namespace std;
+        // cout << "can i here" << endl;
+        // return ;
         if (max_retx_exceeded.has_value() and
             max_retx_exceeded != (sender.consecutive_retransmissions() > TCPConfig::MAX_RETX_ATTEMPTS)) {
+            cout << "will i here???" << endl;
             std::ostringstream ss;
             ss << "after " << _ms << "ms passed the TCP Sender reported\n\tconsecutive_retransmissions = "
                << sender.consecutive_retransmissions() << "\nbut it should have been\n\t";
@@ -185,6 +214,7 @@ struct Tick : public SenderAction {
             ss << TCPConfig::MAX_RETX_ATTEMPTS << std::endl;
             throw SenderExpectationViolation(ss.str());
         }
+        cout << "tick after  if   ==========    " << segment.empty() << endl;
     }
 };
 
@@ -338,6 +368,8 @@ struct ExpectSegment : public SenderExpectation {
 
     void execute(TCPSender &, std::queue<TCPSegment> &segments) const {
         if (segments.empty()) {
+            using namespace std;
+            cout << "bug is here" << endl;
             throw SegmentExpectationViolation::violated_verb("existed");
         }
         TCPSegment seg = std::move(segments.front());
@@ -407,7 +439,10 @@ class TCPSenderTestHarness {
 
     void execute(const SenderTestStep &step) {
         try {
+            using namespace std;
+            cout << "when is not empyt " << outbound_segments.empty() << endl;
             step.execute(sender, outbound_segments);
+            cout << "sender out is empyt " << sender.segments_out().empty() << endl;
             collect_output();
             steps_executed.emplace_back(step);
         } catch (const SenderExpectationViolation &e) {
